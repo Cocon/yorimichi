@@ -1,8 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import 'leaflet/dist/leaflet.css';
-import leaflet from 'leaflet';
+import leaflet, { latLng } from 'leaflet';
 
+import MousePosition from './MousePosition';
 import fetchData from './fetchData';
 
 const config = {
@@ -21,6 +22,7 @@ const config = {
 const App: React.FunctionComponent = () => {
 	let parameter: URLSearchParams;
 	let map: leaflet.Map;
+	let mousePositionBar: MousePosition;
 	const mapRef = React.useRef<HTMLDivElement>(null);
 	const mapStyle: React.CSSProperties = {
 		width: "100%",
@@ -36,10 +38,15 @@ const App: React.FunctionComponent = () => {
 			id: config.basemap.name,
 			detectRetina: true
 		}).addTo(map);
-		map.on({
-			mousemove: event => console.log(event.latlng)
-		})
 
+		mousePositionBar = new MousePosition({
+			position: "topright"
+		}).addTo(map);
+		map.on({
+			mousemove: event => {
+				mousePositionBar.update(event.latlng);
+			}
+		});
 	}, []);
 	React.useEffect(() => {
 		parameter = new URLSearchParams(window.location.search);
