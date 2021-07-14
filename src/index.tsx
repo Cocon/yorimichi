@@ -3,8 +3,12 @@ import ReactDOM from 'react-dom';
 import 'leaflet/dist/leaflet.css';
 import leaflet from 'leaflet';
 import { MousePosition, MousePositionControlProps } from 'leaflet.mouseposition.ts';
-
-import fetchData from './fetchData';
+import { HeaderMenu } from 'materialui-component-collection';
+import drawPoints from './drawPoints';
+import {
+	RouteData,
+	helpMessage
+} from './utils';
 
 const config = {
 	basemap: {
@@ -37,13 +41,14 @@ const customElement: React.FunctionComponent<MousePositionControlProps> = (
 };
 
 const App: React.FunctionComponent = () => {
+	const [routeData, setRouteData] = React.useState<RouteData>();
 	let parameter: URLSearchParams;
 	let map: leaflet.Map;
 	let mousePositionBar: MousePosition;
 	const mapRef = React.useRef<HTMLDivElement>(null);
 	const mapStyle: React.CSSProperties = {
 		width: "100%",
-		height: "100vh"
+		height: "90vh"
 	}
 	React.useEffect(() => {
 		map = leaflet.map(mapRef.current!, {
@@ -68,15 +73,21 @@ const App: React.FunctionComponent = () => {
 	}, []);
 	React.useEffect(() => {
 		parameter = new URLSearchParams(window.location.search);
-		//console.log(parameter.get("hoge"));
 		const url = parameter.get("url");
 		if (url != null) {
+			const baseUrl = url.split("/").slice(0, -1).join("/") + "/";
 			console.log(url);
-			fetchData(url, map);
+			(async () => {
+				const response: RouteData = await fetch(url).then(result => result.json());
+				setRouteData(response);
+				drawPoints(response, baseUrl, map);
+			})();
 		}
 	}, [window.location.search]);
+
 	return (
 		<React.Fragment>
+			<HeaderMenu title={routeData?.title || "Cocon/yorimichi"} helpMessage={helpMessage} />
 			<div id="map" ref={mapRef} style={mapStyle}></div>
 		</React.Fragment>
 	)
