@@ -35,17 +35,3 @@ export const calculateCenter = (latLngs: L.LatLng[]): L.LatLng => {
 	const n = latLngs.length;
 	return new L.LatLng(a / n, b / n);
 }
-/*
-const mousePosition = L.Control.extend({
-	onAdd: () => {
-		this._div = L.DomUtil.create('div', 'custom-panel leaflet-bar');
-		return this._div;
-	},
-	onRemove: () => {},
-	setContent: (latlng: L.LatLng) => {
-		latlng = latlng.wrap();
-		this._div.innerHTML =
-	}
-})
-*/
-

@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import 'leaflet/dist/leaflet.css';
 import leaflet from 'leaflet';
-import { MousePosition } from 'leaflet.mouseposition.ts';
+import { MousePosition, MousePositionControlProps } from 'leaflet.mouseposition.ts';
 
 import fetchData from './fetchData';
 
@@ -18,6 +18,23 @@ const config = {
 	},
 	zoom: 13
 }
+
+const customElement: React.FunctionComponent<MousePositionControlProps> = (
+	props
+) => {
+	return (
+		<table>
+			<tr>
+				<td>Latitude</td>
+				<td>{props.latlng.lat}</td>
+			</tr>
+			<tr>
+				<td>Longitude</td>
+				<td>{props.latlng.lng}</td>
+			</tr>
+		</table>
+	);
+};
 
 const App: React.FunctionComponent = () => {
 	let parameter: URLSearchParams;
@@ -40,7 +57,8 @@ const App: React.FunctionComponent = () => {
 		}).addTo(map);
 
 		mousePositionBar = new MousePosition({
-			position: "topright"
+			position: "topright",
+			customComponent: customElement
 		}).addTo(map);
 		map.on({
 			mousemove: event => {
