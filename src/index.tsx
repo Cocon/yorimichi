@@ -2,8 +2,8 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import 'leaflet/dist/leaflet.css';
 import leaflet from 'leaflet';
+import { MousePosition } from 'leaflet.mouseposition.ts';
 
-import MousePosition from './MousePosition';
 import fetchData from './fetchData';
 
 const config = {
