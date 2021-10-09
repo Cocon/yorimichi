@@ -1,5 +1,7 @@
 import React from 'react';
 import ReactDOMServer from 'react-dom/server';
+import * as Turf from '@turf/turf';
+
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 L.Marker.prototype.options.icon = L.icon({
@@ -13,11 +15,11 @@ L.Marker.prototype.options.icon = L.icon({
 	popupAnchor: [0, -25],
 })
 
-import 'leaflet.polyline.snakeanim';
+import 'leaflet.vectorgrid';
+
 import {
 	RouteData,
 	Place,
-	calculateCenter
 } from './utils';
 
 interface LeafletPopupContentProps extends Place {
@@ -46,28 +48,30 @@ interface drawPointsReturns {
 
 const drawPoints = (routeData: RouteData, baseUrl: string, map: L.Map): drawPointsReturns => {
 	console.log(routeData.title);
-	let latlngs: L.LatLng[] = [];
+	let latlngList: L.LatLng[] = [];
 	routeData.route.forEach(place => {
 		// 各ポイントを結んでパスを作るため各地の緯度経度をまとめた配列を作る
 		const latlng = new L.LatLng(place.location.latitude, place.location.longitude);
 		console.log(place.location);
-		latlngs.push(latlng);
+		latlngList.push(latlng);
 		// 各地点にピンを立てる
 		const marker = L.marker(latlng).bindPopup(ReactDOMServer.renderToString(<LeafletPopupContent {...place} baseUrl={baseUrl} />));
 		marker.addTo(map);
 	});
 
 	// 全体が入るように表示領域を変更
-	map.setView(calculateCenter(latlngs), 10);
+	const pointList = latlngList.map(latlng => [latlng.lng, latlng.lat]);
+	const center = Turf.getCoord(Turf.center(Turf.points(pointList)));
+	map.setView([center[1], center[0]], 10);
 
-	// leaflet.polyline.snakeanimを使って動くパスを描画
+	// 各ポイントを通る曲線を描画
+	const simpleLine = Turf.lineString(pointList);
+	const curve = Turf.bezierSpline(simpleLine);
 	// @ts-ignore
-	const path = L.polyline(latlngs, { snakingSpeed: 2000 });
-	// @ts-ignore
-	path.addTo(map).snakeIn();
+	L.vectorGrid.slicer(curve).addTo(map);
 
 	return {
-		latLngs: latlngs
+		latLngs: latlngList
 	}
 }
 

@@ -25,16 +25,6 @@ export interface Place {
 	location: Location
 }
 
-export const calculateCenter = (latLngs: L.LatLng[]): L.LatLng => {
-	let a = 0;
-	let b = 0;
-	latLngs.forEach(x => {
-		a = a + x.lat;
-		b = b + x.lng;
-	});
-	const n = latLngs.length;
-	return new L.LatLng(a / n, b / n);
-}
 export const helpMessage = [
 	"Cocon/yorimichiを使えば旅の記録を簡単に共有できます。",
 	"・JavaScriptに関する知識は一切不要",
