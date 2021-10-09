@@ -30,7 +30,7 @@ const LeafletPopupContent: React.FunctionComponent<LeafletPopupContentProps> = (
 		<React.Fragment>
 			<div>
 				{props.image !== undefined && props.image.map(image => {
-					return <img src={props.baseUrl + image} width="100%" />
+					return <img src={props.baseUrl + image} width="100%" key={props.name} />
 				})}
 			</div>
 			<div>

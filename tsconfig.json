@@ -9,7 +9,6 @@
         "lib": ["ES5", "ES6", "DOM"],
         "allowSyntheticDefaultImports": true,
         "esModuleInterop": true,
-        "isolatedModules": true,
         "typeRoots": ["src/@types"]
     }
 }
